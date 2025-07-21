@@ -1,0 +1,39 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.env
+.venv/
+env/
+venv/
+
+# Jupyter notebooks (optional)
+.ipynb_checkpoints/
+
+# PyInstaller
+*.spec
+
+# Log files and debug
+*.log
+
+# macOS
+.DS_Store
+
+# VSCode or PyCharm settings (if you're using an IDE)
+.vscode/
+.idea/
+
+# Test or temporary data/output
+*.tmp
+*.bak
+*.swp
+*.orig
+*.out
