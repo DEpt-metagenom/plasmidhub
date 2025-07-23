@@ -5,6 +5,7 @@ import os
 import logging
 import shutil
 import glob
+import subprocess
 from datetime import datetime
 from plasmidhub import preprocessing, ani, filtering, abricate
 
@@ -29,11 +30,9 @@ def setup_logging(log_file_path):
 
     return logger
 
-if __name__ == "__main__":
+def write_versions_txt(output_dir):
     import sys
-    import subprocess
     import importlib.metadata
-
     def get_tool_version(cmd):
         try:
             result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -47,23 +46,16 @@ if __name__ == "__main__":
         except importlib.metadata.PackageNotFoundError:
             return "not installed"
 
-    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
-        input_dir = sys.argv[1]
-        results_dir = os.path.join(input_dir, "results")
-        os.makedirs(results_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+    with open(os.path.join(output_dir, "versions.txt"), "w") as vf:
+        vf.write(f"Plasmidhub version: {VERSION}\n")
+        vf.write(f"Python version: {sys.version.split()[0]}\n")
+        vf.write(f"FastANI version: {get_tool_version(['fastANI', '--version'])}\n")
+        vf.write(f"ABRicate version: {get_tool_version(['abricate', '--version'])}\n\n")
 
-        # Write versions to versions.txt
-        with open(os.path.join(results_dir, "versions.txt"), "w") as vf:
-            vf.write(f"Plasmidhub version: {VERSION}\n")
-            vf.write(f"Python version: {sys.version.split()[0]}\n")
-            vf.write(f"FastANI version: {get_tool_version(['fastANI', '--version'])}\n")
-            vf.write(f"ABRicate version: {get_tool_version(['abricate', '--version'])}\n\n")
-
-            vf.write("Python package versions:\n")
-            for pkg in [
-                "biopython", "pandas", "networkx", "matplotlib", "python-louvain", "numpy"
-            ]:
-                vf.write(f"{pkg}: {get_package_version(pkg)}\n")
+        vf.write("Python package versions:\n")
+        for pkg in ["biopython", "pandas", "networkx", "matplotlib", "python-louvain", "numpy"]:
+            vf.write(f"{pkg}: {get_package_version(pkg)}\n")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -78,16 +70,19 @@ def main():
         ),
         epilog=(
             "DOCUMENTATION \n"
-            "  www.github/link \n\n" 
+            "  https://github.com/BALINTESBL/plasmidhub \n\n" 
             "Example:\n"
-            "  plasmidhub path/to/my/plasmid/FASTA/files --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95 --min_cluster_size 4 --plot_k 2.0 3.0 -t 32\n\n"
-            "Developed by Dr. Balint Timmer, Institute of Metagenomics, University of Debrecen Version 1.0.0"
+            "  plasmidhub path/to/my/plasmid/FASTA/files --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95 --min_cluster_size 4 --plot_k 2.0 3.0 -t 32\n"
+            "  plasmidhub --plot_only path/to/my/results  --plot_k 3 3 --plot_node_color white --plot_node_size 500 --plot_node_shape s -t 32\n\n"
+            "Developed by Dr. Balint Timmer, Institute of Metagenomics, University of Debrecen\n"
+            "Version 1.0.0\n"
+            "If you are using Plasmidhub, please reference: https://github.com/BALINTESBL/plasmidhub"
         ),
         formatter_class=argparse.RawTextHelpFormatter
     )
 
     # Positional argument
-    parser.add_argument("input_dir", help="Path to plasmid FASTA files directory")
+    parser.add_argument("input_dir", nargs="?", help="Path to plasmid FASTA files directory")
 
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {VERSION}",
                          help="Show program's version number and exit")
@@ -130,14 +125,69 @@ def main():
     # PLOT
     plot = parser.add_argument_group("PLOT")
     plot.add_argument("--plot_k", nargs=2, type=float, metavar=('MIN_K', 'MAX_K'),
-                      help="Generate network visualizations with spring layout.\nSpecify minimum and maximum k (e.g., --plot_k 1.5 3.0)")
+                      help="Generate network visualizations.\nSpecify minimum and maximum k (e.g.: --plot_k 1.5 3.0)")
     plot.add_argument("--plot_skip", action="store_true", help="Skip network visualization step")
+    plot.add_argument("--plot_only", type=str, metavar="DIR",
+                      help="Generate plots only from existing files, without running the whole pipeline. Figure parameters can be adjusted:")
+    plot.add_argument("--plot_edge_width", nargs=2, type=float, metavar=('MIN_WIDTH', 'MAX_WIDTH'),
+                      default=[0.2, 2.0], help="Minimum and maximum edge widths (default: 0.2 2.0)")
+    plot.add_argument("--plot_node_size", type=int, default=900, help="Node size (default: 900)")
+    plot.add_argument("--plot_node_shape", type=str, default='o', help="Node shape (e.g.: 'o', 's' (square), '>' (triangle) , '^' , '*' ect., default: o)")
+    plot.add_argument("--plot_node_color", type=str, help="Node color (e.g.: 'white', 'blue', default: 'grey')")
+    plot.add_argument("--plot_figsize", nargs=2, type=int, metavar=('WIDTH', 'HEIGHT'), default=[25, 25], help="Figure size in inches (default: 25 25)")
+    plot.add_argument("--plot_iterations", type=int, default=100, help="Number of iterations (spring layout, default: 100)")
 
     # THREADS
     threads = parser.add_argument_group("THREADS")
     threads.add_argument("-t", "--threads", type=int, default=4, metavar="", help="Number of threads to use (default: 4)")
 
     args = parser.parse_args()
+
+
+    # === Plot-only mode === #
+
+    if args.plot_only:
+        import sys
+        if not os.path.exists(args.plot_only):
+            parser.error("The path provided to --plot_only does not exist.")
+
+        cmd = [sys.executable, os.path.join(os.path.dirname(__file__), "plot_only.py"),
+               "--results_dir", args.plot_only]
+
+        if args.plot_k:
+            cmd.extend(["--plot_k", str(args.plot_k[0]), str(args.plot_k[1])])
+        if args.plot_edge_width:
+            cmd += ["--min_edge_width", str(args.plot_edge_width[0]), "--max_edge_width", str(args.plot_edge_width[1])]
+        if args.plot_node_size:
+            cmd += ["--node_size", str(args.plot_node_size)]
+        if args.plot_node_color:
+            cmd += ["--node_color", args.plot_node_color]
+        if args.plot_node_shape:
+            cmd += ["--node_shape", args.plot_node_shape]
+        if args.plot_figsize:
+            cmd += ["--figsize", str(args.plot_figsize[0]), str(args.plot_figsize[1])]
+        if args.plot_iterations:
+            cmd += ["--iterations", str(args.plot_iterations)]
+
+        subprocess.run(cmd)
+        return
+
+    ## === Full pipeline mode === ##
+    if not args.input_dir:
+        parser.error("input_dir is required unless --plot_only is used.")
+
+    if not args.plot_only:
+        if (
+            args.plot_node_size != 900 or
+            args.plot_edge_width != [0.2, 2.0] or
+            args.plot_node_shape != 'o' or
+            args.plot_figsize != [25, 25] or
+            args.plot_iterations != 100
+        ):
+            parser.error(
+                "Plot customization options (--plot_node_size, --plot_edge_width, etc.) "
+                "can only be used with --plot_only."
+            )
 
     # Create results directory inside input_dir if it doesn't exist
     results_dir = os.path.join(args.input_dir, "results")
@@ -146,10 +196,11 @@ def main():
     # Setup logger now that we have results_dir
     log_file = os.path.join(results_dir, "run.log")
     logger = setup_logging(log_file)
-    logger.info(f"Starting Plasmid Network Generator v{VERSION}")
+    logger.info(f"Starting Plasmidhub v{VERSION}")
 
     logger.info(f"Input directory: {args.input_dir}")
 
+    write_versions_txt(results_dir)
 
     # Step 1-4: preprocess (validate, list files, count, size)
     plasmid_list = preprocessing.validate_and_list_plasmids(args.input_dir)

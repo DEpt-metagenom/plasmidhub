@@ -1,8 +1,10 @@
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import os
 import logging
+
 logger = logging.getLogger(__name__)
 
 def load_network_from_json(json_file):
@@ -107,6 +109,12 @@ def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mappi
 
     pos = nx.spring_layout(G, k=k, seed=69420, iterations=100)
 
+    # --- Create legend handles ---
+    legend_handles = [
+        mpatches.Patch(color=color, label=cluster)
+        for cluster, color in sorted(color_map.items())
+    ]
+
     # With labels
     fig, ax = plt.subplots(figsize=(25, 25))
     nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=900, node_shape='o',
@@ -114,6 +122,10 @@ def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mappi
     nx.draw_networkx_edges(G, pos, width=edge_widths, edge_color='grey', alpha=0.7, ax=ax)
     nx.draw_networkx_labels(G, pos, font_size=10, font_weight='bold', ax=ax)
     plt.axis('off')
+
+    # Add legend
+    legend = ax.legend(handles=legend_handles, loc='upper right', fontsize=16, title="Clusters", title_fontsize=18,
+                       bbox_to_anchor=(1.02, 1.0))
     plt.tight_layout()
     plt.savefig(output_path_no_ext + "_cluster_colored.pdf", format="pdf")
     plt.savefig(output_path_no_ext + "_cluster_colored.svg", format="svg")
@@ -125,6 +137,10 @@ def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mappi
                            linewidths=1, edgecolors='black', alpha=0.9, ax=ax)
     nx.draw_networkx_edges(G, pos, width=edge_widths, edge_color='grey', alpha=0.7, ax=ax)
     plt.axis('off')
+
+    # Add legend
+    legend = ax.legend(handles=legend_handles, loc='upper right', fontsize=16, title="Clusters", title_fontsize=18,
+                       bbox_to_anchor=(1.02, 1.0))
     plt.tight_layout()
     plt.savefig(output_path_no_ext + "_cluster_colored_nolabels.pdf", format="pdf")
     plt.savefig(output_path_no_ext + "_cluster_colored_nolabels.svg", format="svg")

@@ -1,6 +1,8 @@
 import os
 import matplotlib.pyplot as plt
+import random
 import logging
+
 logger = logging.getLogger(__name__)
 
 def assign_cluster_colors(results_dir, mapping_file):
@@ -16,18 +18,28 @@ def assign_cluster_colors(results_dir, mapping_file):
                 cluster = cluster_file.replace('.txt', '')
                 clusters.append(cluster)
 
-    # Use a perceptually distinct color palette (e.g., tab20)
-    cmap = plt.get_cmap('tab20')
-    base_colors = cmap.colors
-
-    # Cycle colors if needed
     n_clusters = len(clusters)
-    full_color_list = (base_colors * ((n_clusters // len(base_colors)) + 1))[:n_clusters]
 
-    color_map = {
-        cluster: '#{:02x}{:02x}{:02x}'.format(int(r * 255), int(g * 255), int(b * 255))
-        for cluster, (r, g, b) in zip(clusters, full_color_list)
-    }
+    # Start with base colors from tab20
+    cmap = plt.get_cmap('tab20')
+    base_colors = [
+        '#{:02x}{:02x}{:02x}'.format(int(r * 255), int(g * 255), int(b * 255))
+        for r, g, b in cmap.colors
+    ]
+
+    used_colors = set(base_colors[:min(n_clusters, len(base_colors))])
+    full_color_list = base_colors[:min(n_clusters, len(base_colors))]
+
+    # Generate additional distinct random colors if needed
+    while len(full_color_list) < n_clusters:
+        while True:
+            color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+            if color not in used_colors:
+                used_colors.add(color)
+                full_color_list.append(color)
+                break
+
+    color_map = dict(zip(clusters, full_color_list))
 
     with open(color_file, 'w') as out:
         for cluster, color in color_map.items():
