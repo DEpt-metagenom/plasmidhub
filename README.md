@@ -138,6 +138,7 @@ Users are welcome to report any issue or feedback related to Plasmidhub by posti
 
 Developed by **Dr. Bálint Timmer**  
 *Institute of Metagenomics, University of Debrecen, Debrecen, Hungary* 
+
 *Department of Medical Microbiology, University of Pécs Medical School, Pécs, Hungary* 
 
  <img width="33" height="33" alt="image" src="https://github.com/user-attachments/assets/bd9f17e9-e9ce-4edb-8319-ef0091c45f00" /> <img width="99" height="32.054" alt="image" src="https://github.com/user-attachments/assets/5f3d5b6b-cef6-478a-af66-614b2e2860b2" />
