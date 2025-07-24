@@ -136,7 +136,8 @@ Users are welcome to report any issue or feedback related to Plasmidhub by posti
 
 ---
 
-Developed by **Dr. Balint Timmer**,  
+Developed by **Dr. Bálint Timmer**  
 *Institute of Metagenomics, University of Debrecen, Debrecen, Hungary*  
-*Department of Medical Microbiology, University of Pecs, Faculty of Medicine, Pecs, Hungary*
-Contact: [timmer.balint@med.unideb.hu](mailto:timmer.balint@med.unideb.hu) [timmer.balint@pte.hu](mailto:timmer.balint@pte.hu)
+*Department of Medical Microbiology, University of Pécs Medical School, Pécs, Hungary*
+
+Contact: [timmer.balint@med.unideb.hu](mailto:timmer.balint@med.unideb.hu) , [timmer.balint@pte.hu](mailto:timmer.balint@pte.hu)
