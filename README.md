@@ -1,7 +1,7 @@
- <img src="https://img.shields.io/github/license/BALINTESBL/plasmidhub" alt="License"> <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  <img src="https://github.com/timmerb/Plasmidhub/actions/workflows/tests.yml/badge.svg" alt="Build"> 
+ <img src="https://img.shields.io/github/license/BALINTESBL/plasmidhub" alt="License"> <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  ![Build Status](https://github.com/BALINTESBL/plasmidhub/actions/workflows/tests.yml/badge.svg)
  
 # Plasmidhub
-Plasmidhub is a free and open-source command-line tool for comprehensive plasmid network analysis based on nucleotide sequence similarity. It enables researchers to cluster plasmids and identify genetically related groups using a dynamic, database-independent approach. The approach of plasmidhub: 
+Plasmidhub is a free and open-source command-line tool for comprehensive plasmid network analysis based on nucleotide sequence similarity. It enables researchers to cluster plasmids and identify genetically related groups using a dynamic, database-independent approach. Plasmidhub's approach: 
 * Is applicable to any plasmid
 * Provides an unambiguous classification
 * Considers the whole sequence of the plasmids
@@ -69,9 +69,9 @@ This command will:
 | **Input**      | `                      | Path to folder with plasmid FASTA files | –                         |
 | **FastANI**    | `--fragLen`            | Fragment length                         | `1000`                    |
 |                | `--kmer`               | K-mer size                              | `14`                      |
-|                | `--coverage_threshold` | Minimum proportion of the plasmid leghts| `0.5`                     |
-|                |                        | covered by the matching fragments       |                           |
-|                | `--ani_threshold`      | minimum ANI score (after applying       | `95.0`                    |
+|                | `--coverage_threshold` | Minimum proportion of the plasmid lenghts| `0.5`                     |
+|                |                        |  covered by the matching fragments      |                           |
+|                | `--ani_threshold`      | Minimum ANI score (after applying       | `95.0`                    |
 |                |                        |  coverage threshold)                    |                           | 
 | **Clustering** | `--cluster_off`        | Disable clustering                      | –                         |
 |                | `--min_cluster_size`   | Minimum cluster size (plasmids)         | `3`                       |
@@ -82,7 +82,7 @@ This command will:
 |                | `--plot_skip`          | Skips plotting                          |                           |
 | **Threads**    | `-t` or `--threads`    | Number of threads                       | `4`                       |
 ### Plot-only mode 
-In plot-only mode, network visualizations can be generated from existing networks directyl, by using --plot_only flag and defining the directory path. In this mode, several parameters can be adjusted.
+In plot-only mode, network visualizations can be generated from existing networks directly, by using --plot_only flag and defining the directory path. In this mode, several parameters can be adjusted.
 Example usage:
 ```
 % plasmidhub --plot_only path/to/my/results  --plot_k 3 5 --plot_node_color blue --plot_node_size 500 --plot_node_shape s --plot_figsize 20 20 -t 32
@@ -124,10 +124,10 @@ Plasmidhub performs an all-vs-all comparison of input plasmid sequences using Fa
 - **Nodes** represent plasmids
 - **Edges** represent genetic relatedness (weighted ANI)
 
-Within the network, communities are detected via Louvain method (subclusters). Plasmid clusters are complete subgraph (clique) detected within the whole network. Clusters comprising highly similar or identical plasmid. If relevant and scientifically appropriate, plasmids of the same cluster can considered as equivalent. This approach is alignment-free, reference-free, databese-independent, and uses relative system to overcome the limitations of databes dependency (untypeable plasmids, multireplicon/multi-MOB plasmids, mosaic, hybird plasmids ect.)
-Network and node statistics are saved to a distinct directory for downstream analyses (Connectance, modularity, nestedness, community partition, degree centrality, node degrees, betweenness, closeness ect.)
+Within the network, communities are detected via Louvain method (subclusters). Plasmid clusters are complete subgraphs (cliques) detected within the whole network. Clusters comprising highly similar or identical plasmids. If relevant and scientifically appropriate, plasmids of the same cluster may be considered as equivalent. This approach is alignment-free, reference-free, database-independent, and uses relative similarity-based system to overcome the limitations of database dependency (untypeable plasmids, multireplicon/multi-MOB plasmids, mosaic, hybrid plasmids ect.)
+Network and node statistics are saved to a distinct directory for downstream analyses (connectance, modularity, nestedness, community partition, degree centrality, node degrees, betweenness, closeness ect.)
 
-Resistance and virulence genes can be annotated via [ABRicate](https://github.com/tseemann/abricate). The abricate files are saved to a distinct subdirectory. By default, plasmidfinder, vfdb and card databases are used, but optionally other databases can be set from the databases available with ABRicate. 
+Resistance and virulence genes can be annotated via [ABRicate](https://github.com/tseemann/abricate). The abricate files are saved to a distinct subdirectory. By default, plasmidfinder, vfdb and card databases are used, but optionally other databases can be specified from the databases available with ABRicate. 
 
 To generate custom visualizations, feel free to use and modify the *plot.py*.
 
