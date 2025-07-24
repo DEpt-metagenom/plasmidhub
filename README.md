@@ -6,12 +6,12 @@ Plasmidhub is a free and open-source command-line tool for comprehensive plasmid
 * Provides an unambiguous classification
 * Considers the whole sequence of the plasmids
 
-Network visualizations and stats are provided for further analysis.
+Network visualizations, stats and data are provided for further analysis.
 
 ## Download and Installation
 PlasmidHub can be installed easily via PyPI, Bioconda, or directly from GitHub.
 
-### Install via Pip:
+### Pip
 ```
 pip install plasmidhub
 ```
@@ -21,7 +21,7 @@ Recommended environment setup:
 conda create -n plasmidhub python=3.8
 conda activate plasmidhub
 ```
-### Install via Bioconda
+### Bioconda
 
 If you use Conda for environment management:
 ```
@@ -33,7 +33,7 @@ conda config --add channels defaults
 conda config --add channels bioconda
 conda config --add channels conda-forge
 ```
-### Install from GitHub
+### GitHub
 To get the latest version:
 ```
 git clone https://github.com/BALINTESBL/plasmidhub.git
@@ -42,12 +42,10 @@ pip install .
 ```
 ### Dependencies
 This tool requires the following external software to be installed:
-
 - [FastANI](https://github.com/ParBLiSS/FastANI)
 - [ABRicate](https://github.com/tseemann/abricate)
 
 ## Inputs
-
 Plasmidhub requires plasmid FASTA files (.fna or .fa or .fasta). Your FASTA files need to be placed in one directory. Ideally, there are no other files in the directory.
 
 ## Usage
@@ -58,14 +56,12 @@ Example usage:
 
 ```
 This command will:
-
 * Compute pairwise ANI using FastANI
 * Build a plasmid similarity network
 * Save network metrics and statistics (results/statistics)
 * Cluster plasmids
 * Annotate resistance and virulence genes with ABRicate (results/abricate_results)
 * Generate network visualizations (results/plots)
-
 ### Key Options
 
 | Category       | Flag                   | Description                             | Default                   |
@@ -82,10 +78,9 @@ This command will:
 | **ABRicate**   | `--skip_abricate`      | Skip annotation step                    | –                         |
 |                | `--abricate_dbs`       | Databases to use e.g.:                  | `plasmidfinder card vfdb` |
 |                |                        |  --abricate_dbs ncbi ecoli_vf           |                           |
-| **Plotting**   | `--plot_k`             | Range of k values                       | 3 3                       |
+| **Plotting**   | `--plot_k`             | Range of k values                       |`3` `3`                    |
 |                | `--plot_skip`          | Skips plotting                          |                           |
 | **Threads**    | `-t` or `--threads`    | Number of threads                       | `4`                       |
-
 ### Plot-only mode 
 In plot-only mode, network visualizations can be generated from existing networks directyl, by using --plot_only flag and defining the directory path. In this mode, several parameters can be adjusted.
 Example usage:
@@ -93,93 +88,55 @@ Example usage:
 % plasmidhub --plot_only path/to/my/results  --plot_k 3 5 --plot_node_color blue --plot_node_size 500 --plot_node_shape s --plot_figsize 20 20 -t 32
 
 ```
-| **Plotting**   | `--plot_node_size`     | Size of nodes                           | `900`                     |
+| **Plotting**   | Flag                   | Description                             | Default                   |
+| -------------- | ---------------------- | --------------------------------------- | ------------------------- | 
+|                | `--plot_node_size`     | Size of nodes                           | `900`                     |
 |                | `--plot_node_shape`    | Shape of nodes (`o`, `s`, `^`, etc.)    | `o` (circle)              |
 |                | `--plot_edge_width`    | Min/max edge width                      | `0.2 2.0`                 |
 |                | `--plot_figsize`       | Figure size in inches                   | `25 25`                   |
 |                | `--plot_iterations`    | Spring layout iterations                | `100`                     |
 
 Node shapes: 
-| **Node shapes**|                        |
-|      'o'       | circle                 |
-|      'v'       |	triangle_down          |
-|      '^'       |	triangle_up            |
-|      '<'       |	triangle_left          |
-|      '>'       |	triangle_right         |
-|      's'       |	square                 |
-|      'p'       |	pentagon               |
-|      '*'       |	star                   |
-|      'h'       |	hexagon1               |
-|      'H'       |	hexagon2               |
-|      '+'       |	plus                   |
-|      'x'    	  | x                      |
-|      'D'       |	diamond                |
-|      'd'	      | thin diamond           |
+| Marker | Description                |
+| ------ | -------------------------- |
+| `'o'`  | Circle                     |
+| `'s'`  | Square                     |
+| `'^'`  | Upward-pointing triangle   |   
+| `'v'`  | Downward-pointing triangle |       
+| `'>'`  | Right-pointing triangle    |       
+| `'<'`  | Left-pointing triangle     |          
+| `'D'`  | Diamond                    |        
+| `'d'`  | Thin diamond               |    
+| `'p'`  | Pentagon                   |    
+| `'h'`  | Hexagon 1                  |               
+| `'H'`  | Hexagon 2                  |
+|  `'*'` | Star                       |
+| `'+'`  | Plus                       |
+| `'x'`  | Cross                      |
+| `'X'`  | Filled X                   |
 
-
+Plots generated with Plasmidhub:
 <img width="1668" height="1668" alt="image" src="https://github.com/user-attachments/assets/afed18b8-6dbe-44b8-b539-23aa47b4bfb0" />
-
-
-
-You can install them with conda:
-
-```bash
-conda install -c bioconda fastani abricate
-abricate --setupdb
-
----
 
 ## Overview
 
-Plasmidhub performs an **all-vs-all comparison** of input plasmid sequences using [FastANI] (https://github.com/ParBLiSS/FastANI), and builds a similarity network where:
+Plasmidhub performs an all-vs-all comparison of input plasmid sequences using FastANI. FastANI results ("raw results") are filtered  by the coverage (what proportion of the full plasmid sequences are covered by the matching fragments). The remaining pairs are filtered by the minimum ANI score. ANI scores are further weighted by the proportion of matching fragments, and data are sorted into a similarity matrix. The network is build from the similarity matrix, where:
 - **Nodes** represent plasmids
-- **Edges** represent genetic relatedness based on shared ANI
+- **Edges** represent genetic relatedness (weighted ANI)
 
-The tool clusters plasmids based on complete subgraph (clique) detection, identifying highly similar plasmid groups. This approach is **alignment-free**, **reference-free**, **databese-independent**, and uses relative system instead of database dependency.
+Within the network, communities are detected via Louvain method (subclusters). Plasmid clusters are complete subgraph (clique) detected within the whole network. Clusters comprising highly similar or identical plasmid. If relevant and scientifically appropriate, plasmids of the same cluster can considered as equivalent. This approach is alignment-free, reference-free, databese-independent, and uses relative system to overcome the limitations of databes dependency (untypeable plasmids, multireplicon/multi-MOB plasmids, mosaic, hybird plasmids ect.)
+Network and node statistics are saved to a distinct directory for downstream analyses (Connectance, modularity, nestedness, community partition, degree centrality, node degrees, betweenness, closeness ect.)
 
-Network visualizations and network statistics are provided for further analysis.
+Resistance and virulence genes can be annotated via [ABRicate](https://github.com/tseemann/abricate). The abricate files are saved to a distinct subdirectory. By default, plasmidfinder, vfdb and card databases are used, but optionally other databases can be set from the databases available with ABRicate. 
 
-Resistance and virulence genes can optionally be annotated using [ABRicate](https://github.com/tseemann/abricate).
+To generate custom visualizations, feel free to use and modify the *plot.py*.
 
----
-
-## Features
-
-- Full-sequence plasmid comparisons using FastANI
-- Customizable fragment length and k-mer size
-- Dynamic ANI and coverage thresholding
-- Graph-based clustering via community detection
-- Optional annotation with ABRicate (plasmidfinder, card, vfdb, etc.)
-- Network visualization and exportable outputs
-- Statistics for downstream analyses (Connectance, modularity, nestedness, community partition, degree centrality, node degrees, betweenness, closeness ect.)
+## Troubleshooting
+Users are welcome to report any issue or feedback related to Plasmidhub by posting a [Github issue](https://github.com/BALINTESBL/plasmidhub/issues).
 
 ---
 
-## Input Requirements
-
-- A directory containing plasmid **nucleotide FASTA files**  
-  Accepted extensions: `.fna`, `.fa`, `.fasta`
-- Preferably, no other files in the input directory
-- Each file should represent a **single plasmid**
-
----
-
-## Example Usage
-
-```bash
-plasmidhub path/to/plasmid_dir \
-  --fragLen 1000 \
-  --kmer 14 \
-  --coverage_threshold 0.5 \
-  --ani_threshold 95 \
-  --min_cluster_size 4 \
-  --plot_k 2.0 3.0 \
-  -t 32
-
----
-
-Developed by **Dr. Bálint Timmer**,  
+Developed by **Dr. Balint Timmer**,  
 *Institute of Metagenomics, University of Debrecen, Debrecen, Hungary*  
-Contact: [timmer.balint@med.unideb.hu](mailto:timmer.balint@med.unideb.hu)
-
-
+*Department of Medical Microbiology, University of Pecs, Faculty of Medicine, Pecs, Hungary*
+Contact: [timmer.balint@med.unideb.hu](mailto:timmer.balint@med.unideb.hu) [timmer.balint@pte.hu](mailto:timmer.balint@pte.hu)
