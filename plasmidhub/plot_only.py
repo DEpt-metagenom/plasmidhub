@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument("--min_edge_width", type=float, default=0.2)
     parser.add_argument("--max_edge_width", type=float, default=2.0)
     parser.add_argument("--node_size", type=int, default=900)
-    parser.add_argument("--node_color", type=str, default="grey")
+    parser.add_argument("--node_color", type=str, default="#cccccc")
     parser.add_argument("--node_shape", type=str, default="o")
     parser.add_argument("--figsize", nargs=2, type=float, default=[25, 25])
     parser.add_argument("--iterations", type=int, default=100)
