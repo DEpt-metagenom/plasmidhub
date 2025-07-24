@@ -1,29 +1,43 @@
-# Plasmid Network Tool
+ <img src="https://img.shields.io/github/license/BALINTESBL/plasmidhub" alt="License"> <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  <img src="https://github.com/timmerb/Plasmidhub/actions/workflows/tests.yml/badge.svg" alt="Build"> 
+ 
+# Plasmidhub
+Plasmidhub is a free and open-source command-line tool for comprehensive plasmid network analysis based on nucleotide sequence similarity. It enables researchers to cluster plasmids and identify genetically related groups using a dynamic, database-independent approach.
 
-## Description
-A command line tool to generate plasmid similarity networks from plasmid FASTA files using FastANI.
+## Download and Installation
 
-## Usage
+Recommended environment setub
 
-```bash
-python -m plasmidnetrun.main /path/to/plasmids --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95
-
-```
-
-# Recommended environment setup
 conda create -n plasmidhub_env python=3.10
 conda activate plasmidhub_env
 
-# Clone and install
-git clone https://github.com/YOUR_USERNAME/Plasmidhub.git
+### Clone and install
+
+git clone https://github.com/BALINTESBL/plasmidhub.git
 cd Plasmidhub
 pip install .
-## Dependencies
+
+### Dependencies
 
 This tool requires the following external software to be installed and available in PATH:
 
 - [FastANI](https://github.com/ParBLiSS/FastANI)
 - [ABRicate](https://github.com/tseemann/abricate)
+
+## Inputs
+
+## Usage
+
+```bash
+plasmidhub path/to/my/plasmid/FASTA/files --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95 --min_cluster_size 4 --plot_k 2.0 3.0 -t 32
+
+plasmidhub --plot_only path/to/my/results  --plot_k 3 3 --plot_node_color white --plot_node_size 500 --plot_node_shape s -t 32
+
+```
+
+
+<img width="1668" height="1668" alt="image" src="https://github.com/user-attachments/assets/afed18b8-6dbe-44b8-b539-23aa47b4bfb0" />
+
+
 
 You can install them with conda:
 
@@ -86,7 +100,7 @@ plasmidhub path/to/plasmid_dir \
 
 ---
 
-Developed by **Dr. Bálint Timmer**,  
+Developed by **Dr. BÃ¡lint Timmer**,  
 *Institute of Metagenomics, University of Debrecen, Debrecen, Hungary*  
 Contact: [timmer.balint@med.unideb.hu](mailto:timmer.balint@med.unideb.hu)
 
