@@ -1,4 +1,4 @@
- <img src="https://img.shields.io/github/license/BALINTESBL/plasmidhub" alt="License"> <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  ![Build Status](https://github.com/BALINTESBL/plasmidhub/actions/workflows/tests.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  [![Build Status](https://github.com/BALINTESBL/plasmidhub/actions/workflows/python-package.yml/badge.svg)](https://github.com/BALINTESBL/plasmidhub/actions)
  
 # Plasmidhub
 Plasmidhub is a free and open-source command-line tool for comprehensive plasmid network analysis based on nucleotide sequence similarity. It enables researchers to cluster plasmids and identify genetically related groups using a dynamic, database-independent approach. Plasmidhub's approach: 
@@ -9,7 +9,7 @@ Plasmidhub is a free and open-source command-line tool for comprehensive plasmid
 Network visualizations, stats and data are provided for further analysis.
 
 ## Download and Installation
-PlasmidHub can be installed easily via PyPI, Bioconda, or directly from GitHub.
+PlasmidHub can be installed via PyPI, Bioconda, or directly from GitHub.
 
 ### Pip
 ```
@@ -49,11 +49,10 @@ This tool requires the following external software to be installed:
 Plasmidhub requires plasmid FASTA files (.fna or .fa or .fasta). Your FASTA files need to be placed in one directory. Ideally, there are no other files in the directory.
 
 ## Usage
-Perform plasmid network analysis with default settings by defining only the directory path of your plasmid FASTA files! Or, you can also adjust parameters.
+Perform plasmid network analysis with default settings by defining only the directory path of your plasmid FASTA files! Alternatively, parameters can be adjusted.
 Example usage:
 ```
 % plasmidhub path/to/my/plasmid/FASTA/files --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95 --min_cluster_size 4 --plot_k 2.0 3.0 -t 32
-
 ```
 This command will:
 * Compute pairwise ANI using FastANI
@@ -82,16 +81,16 @@ This command will:
 |                | `--plot_skip`          | Skips plotting                          |                           |
 | **Threads**    | `-t` or `--threads`    | Number of threads                       | `4`                       |
 ### Plot-only mode 
-In plot-only mode, network visualizations can be generated from existing networks directly, by using --plot_only flag and defining the directory path. In this mode, several parameters can be adjusted.
+In plot-only mode, network visualizations can be generated from existing networks directly, by using --plot_only flag and defining the directory path. In this mode, multiple parameters can be adjusted.
 Example usage:
 ```
 % plasmidhub --plot_only path/to/my/results  --plot_k 3 5 --plot_node_color blue --plot_node_size 500 --plot_node_shape s --plot_figsize 20 20 -t 32
-
 ```
 | **Plotting**   | Flag                   | Description                             | Default                   |
 | -------------- | ---------------------- | --------------------------------------- | ------------------------- | 
 |                | `--plot_node_size`     | Size of nodes                           | `900`                     |
 |                | `--plot_node_shape`    | Shape of nodes (`o`, `s`, `^`, etc.)    | `o` (circle)              |
+|                | `--plot_node_color`    | Color of nodes (`blue`, `#e8e831`, etc.)| `grey`                    |
 |                | `--plot_edge_width`    | Min/max edge width                      | `0.2 2.0`                 |
 |                | `--plot_figsize`       | Figure size in inches                   | `25 25`                   |
 |                | `--plot_iterations`    | Spring layout iterations                | `100`                     |
@@ -120,7 +119,7 @@ Plots generated with Plasmidhub:
 
 ## Overview
 
-Plasmidhub performs an all-vs-all comparison of input plasmid sequences using FastANI. FastANI results ("raw results") are filtered  by the coverage (what proportion of the full plasmid sequences are covered by the matching fragments). The remaining pairs are filtered by the minimum ANI score. ANI scores are further weighted by the proportion of matching fragments, and data are sorted into a similarity matrix. The network is build from the similarity matrix, where:
+Plasmidhub performs an all-vs-all comparison of input plasmid sequences using FastANI. FastANI results ("raw results") are filtered  by the coverage (proportion of the full plasmid sequences covered by the matching fragments). The remaining pairs are filtered by the minimum ANI score. ANI scores are further weighted by the proportion of matching fragments and data are sorted into a similarity matrix. The network is build from the similarity matrix, where:
 - **Nodes** represent plasmids
 - **Edges** represent genetic relatedness (weighted ANI)
 
@@ -129,7 +128,7 @@ Network and node statistics are saved to a distinct directory for downstream ana
 
 Resistance and virulence genes can be annotated via [ABRicate](https://github.com/tseemann/abricate). The abricate files are saved to a distinct subdirectory. By default, plasmidfinder, vfdb and card databases are used, but optionally other databases can be specified from the databases available with ABRicate. 
 
-To generate custom visualizations, feel free to use and modify the *plot.py*.
+To generate more custom visualizations, feel free to use and modify the *plot.py*.
 
 ## Troubleshooting
 Users are welcome to report any issue or feedback related to Plasmidhub by posting a [Github issue](https://github.com/BALINTESBL/plasmidhub/issues).
@@ -137,7 +136,7 @@ Users are welcome to report any issue or feedback related to Plasmidhub by posti
 ---
 
 Developed by **Dr. Bálint Timmer**  
-*Institute of Metagenomics, University of Debrecen, Debrecen, Hungary* 
+*Institute of Metagenomics, University of Debrecen, Debrecen, Hungary*  
 *Department of Medical Microbiology, University of Pécs Medical School, Pécs, Hungary* 
 
  <img width="33" height="33" alt="image" src="https://github.com/user-attachments/assets/bd9f17e9-e9ce-4edb-8319-ef0091c45f00" /> <img width="99" height="32.054" alt="image" src="https://github.com/user-attachments/assets/5f3d5b6b-cef6-478a-af66-614b2e2860b2" />
