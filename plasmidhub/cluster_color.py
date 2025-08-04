@@ -1,3 +1,14 @@
+"""
+Cluster Color Assignment Script
+
+This script assigns a unique color to each cluster based on the provided
+cluster list and writes the cluster-to-color mapping to a text file. It ensures
+distinct coloring using a mix of the `tab20` matplotlib colormap and random
+color generation when necessary.
+
+Intended for use in visualizing plasmid networks with cluster-specific node colors.
+"""
+
 import os
 import matplotlib.pyplot as plt
 import random

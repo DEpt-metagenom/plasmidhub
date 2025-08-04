@@ -10,7 +10,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 def load_and_process_fastani_data(file_path, results_dir):
-    """Load and process FastANI data to create a similarity matrix."""
+    """
+    Load and process FastANI output to create a similarity matrix.
+
+    Args:
+        file_path (str): Path to the FastANI results TSV file.
+        results_dir (str): Directory where the similarity matrix will be saved.
+
+    Returns:
+        tuple:
+            - labels (np.ndarray): Unique plasmid identifiers from the data.
+            - similarity_matrix (np.ndarray): Weighted similarity matrix (ANI * matching fragments ratio).
+    """
+
     with open(file_path, 'r') as f:
         lines = f.readlines()
 
@@ -59,6 +71,21 @@ def load_and_process_fastani_data(file_path, results_dir):
     return labels, similarity_matrix.values
 
 def create_network(labels, similarity_matrix, plasmid_list_path, results_dir):
+    """
+    Construct a weighted plasmid similarity network from a similarity matrix.
+
+    Adds nodes for each plasmid and edges between plasmids with similarity above
+    a threshold. The final network is saved in multiple formats for further analysis.
+
+    Args:
+        labels (np.ndarray): Plasmid identifiers.
+        similarity_matrix (np.ndarray): Weighted similarity matrix.
+        plasmid_list_path (str): Path to the list of all plasmids.
+        results_dir (str): Directory to save network files.
+
+    Returns:
+        networkx.Graph: The constructed plasmid similarity network.
+    """
     G = nx.Graph()
 
     for label in labels:
@@ -104,6 +131,17 @@ def create_network(labels, similarity_matrix, plasmid_list_path, results_dir):
     return G
 
 def detect_communities(G):
+    """
+    Detect communities in the plasmid similarity network.
+
+    Uses the Louvain algorithm to partition the network into subclusters.
+
+    Args:
+        G (networkx.Graph): Plasmid similarity network.
+
+    Returns:
+        dict: Mapping of node to assigned community.
+    """
     partition = community_louvain.best_partition(G, weight='weight')
     return partition
 
@@ -176,6 +214,23 @@ def calculate_degree_centrality(G, results_dir):
     return df_degree_centrality
 
 def build_network(file_path="ANI_results_final.tsv", plasmid_list_path="Plasmid_list.txt", results_dir="results"):
+    """
+    End-to-end pipeline for building and analyzing the plasmid similarity network.
+
+    Steps:
+        1. Load and process FastANI results into a similarity matrix.
+        2. Build the weighted plasmid similarity network.
+        3. Detect community subclusters.
+        4. Calculate inter-cluster distances and save plasmids per subcluster.
+        5. Compute overall network metrics (connectance, modularity, nestedness).
+        6. Calculate and save node-level metrics (degree, betweenness, centrality).
+
+    Args:
+        file_path (str, optional): Path to the FastANI results file.
+        plasmid_list_path (str, optional): Path to the plasmid list file.
+        results_dir (str, optional): Output directory for all results.
+    """
+
     os.makedirs(results_dir, exist_ok=True)
 
     labels, similarity_matrix = load_and_process_fastani_data(file_path, results_dir)

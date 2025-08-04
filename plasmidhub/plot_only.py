@@ -1,3 +1,13 @@
+
+"""
+Plot only mode provides custom visualization of a precomputed plasmid network
+from an already existingJSON file using spring layout, with multiple adjustable parameters. It can generate plots with and without labels,
+and optionally color nodes by cluster.
+
+Usage:
+    python plot_only.py --results_dir PATH --plot_k MIN MAX [other optional args]
+"""
+
 import argparse
 import os
 import json
@@ -7,6 +17,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 def parse_args():
+    """
+    Parses command-line arguments for custom plotting.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
     parser = argparse.ArgumentParser(description="Plot-only mode in plasmidnet for custom plots")
     parser.add_argument("--results_dir", required=True, help="Path to directory")
     parser.add_argument("--plot_k", nargs=2, type=float, metavar=('MIN_K', 'MAX_K'),
@@ -21,11 +37,31 @@ def parse_args():
     return parser.parse_args()
 
 def load_network_from_json(json_file):
+    """
+    Loads a network from a Cytoscape-compatible JSON file.
+
+    Args:
+        json_file (str): Path to the JSON file.
+
+    Returns:
+        networkx.Graph: Parsed network graph.
+    """
     with open(json_file, 'r') as f:
         data = json.load(f)
     return nx.cytoscape_graph(data)
 
 def scale_edge_weights(G, min_width, max_width):
+    """
+    Scales edge weights to fall within a specified width range.
+
+    Args:
+        G (networkx.Graph): Input graph.
+        min_width (float): Minimum width for edges.
+        max_width (float): Maximum width for edges.
+
+    Returns:
+        list: List of scaled edge widths.
+    """
     edge_weights = nx.get_edge_attributes(G, 'weight')
     min_weight = 5
     max_weight = 100
@@ -38,6 +74,15 @@ def scale_edge_weights(G, min_width, max_width):
     return scaled
 
 def visualize_network(G, k, output_path, args):
+    """
+    Visualizes a network using spring layout and saves plots with and without labels.
+
+    Args:
+        G (networkx.Graph): Network graph.
+        k (float): Spring layout `k` value.
+        output_path (str): Base path for saving output plots.
+        args (argparse.Namespace): Parsed command-line arguments.
+    """
     pos = nx.spring_layout(G, k=k, seed=69420, iterations=args.iterations)
     edge_widths = scale_edge_weights(G, args.min_edge_width, args.max_edge_width)
 
@@ -63,6 +108,17 @@ def visualize_network(G, k, output_path, args):
     plt.close()
 
 def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mapping_file, cluster_color_file, args):
+    """
+    Visualizes a network with nodes colored by cluster.
+
+    Args:
+        G (networkx.Graph): Network graph.
+        k (float): Spring layout `k` value.
+        output_path_no_ext (str): Output base path (without extension).
+        cluster_mapping_file (str): File mapping nodes to cluster labels.
+        cluster_color_file (str): File mapping cluster labels to colors.
+        args (argparse.Namespace): Parsed command-line arguments.
+    """
     cluster_map = {}
     with open(cluster_mapping_file) as f:
         for line in f:
@@ -121,6 +177,10 @@ def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mappi
     plt.close()
 
 def run():
+    """
+    Main function to run the script.
+    Loads the network and creates plots for the given k range.
+    """
     args = parse_args()
 
     print("Generating network visualizations...")

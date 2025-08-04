@@ -1,3 +1,17 @@
+
+"""
+This module provides functions to visualize a plasmid network stored as a Cytoscape-compatible JSON file.
+It supports both basic visualizations (with grey nodes and edges) and colored visualizations based on
+cluster assignments (if clustering is not turned off). Outputs are saved as PDF and SVG files, with and without node labels.
+
+Dependencies:
+    - networkx
+    - matplotlib
+    - json
+    - logging
+    - os
+"""
+
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -14,7 +28,15 @@ def load_network_from_json(json_file):
     return nx.cytoscape_graph(data)
 
 def visualize_network_basic(G, k, output_path_no_ext):
-    """Visualize the network with basic grey nodes and edges"""
+    """
+    Generate a basic network visualization with grey nodes and edges.
+    Saves both labeled and unlabeled versions in PDF and SVG format.
+
+    Args:
+        G (networkx.Graph): The network graph.
+        k (float): The spring layout "k" parameter (node spacing).
+        output_path_no_ext (str): Base path (without extension) for saving outputs.
+    """
 
     min_weight = 5
     max_weight = 100
@@ -59,8 +81,19 @@ def visualize_network_basic(G, k, output_path_no_ext):
     plt.close()
 
 def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mapping_file, cluster_color_file):
-    """Visualize the network with node colors based on cluster assignment"""
+    """
+    Visualize the network graph with nodes colored by cluster membership.
 
+    Reads cluster assignments and their corresponding colors from input files.
+    Saves both labeled and unlabeled versions in PDF and SVG format.
+
+    Args:
+        G (networkx.Graph): The network graph.
+        k (float): The spring layout "k" parameter (node spacing).
+        output_path_no_ext (str): Base path (without extension) for saving outputs.
+        cluster_mapping_file (str): Path to TSV file mapping plasmid IDs to cluster IDs.
+        cluster_color_file (str): Path to TSV file mapping cluster IDs to hex color codes.
+    """
     # Check if cluster_list.txt contains only the header
     cluster_list_file = os.path.join(os.path.dirname(cluster_mapping_file), "cluster_list.txt")
     if os.path.exists(cluster_list_file):
@@ -148,7 +181,15 @@ def visualize_network_colored_by_cluster(G, k, output_path_no_ext, cluster_mappi
 
 
 def run_visualizations(results_dir, k_min, k_max):
-    """Main function to load graph and generate visualizations over k range."""
+    """
+    Run all visualizations over a range of 'k' layout parameters.
+
+    Args:
+        results_dir (str): Path to the results directory containing network and cluster files.
+        k_min (int): Minimum k value (inclusive).
+        k_max (int): Maximum k value (exclusive).
+    """
+
     json_file = os.path.join(results_dir, "network.json")
     G = load_network_from_json(json_file)
 

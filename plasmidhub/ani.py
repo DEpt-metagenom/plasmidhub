@@ -1,3 +1,18 @@
+"""
+Run FastANI to calculate pairwise Average Nucleotide Identity (ANI) between plasmid sequences.
+
+This script runs the FastANI tool using the same plasmid list as both query and reference to compute
+pairwise similarity. The results are written to `fastani_raw_results.tsv` in the specified output directory.
+
+Parameters:
+    plasmid_list_file (str): Path to a text file containing a list of plasmid FASTA files.
+    fragLen (int, optional): Fragment length used, user defined (default: 1000).
+    minFrag (int, optional): Minimum number of matching fragments required, user defined (default: 3).
+    kmer (int, optional): K-mer size, user defined (default: 14).
+    output_dir (str, optional): Directory to save the FastANI results.
+    threads (int, optional): Number of threads to use (default: 4).
+"""
+
 import os
 import subprocess
 import logging

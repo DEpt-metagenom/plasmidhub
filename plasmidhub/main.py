@@ -8,11 +8,31 @@ import glob
 import subprocess
 from datetime import datetime
 from plasmidhub import preprocessing, ani, filtering, abricate
+from pathlib import Path
+import contextlib
+
+@contextlib.contextmanager
+def change_dir(destination: Path):
+    prev_cwd = Path.cwd()
+    os.chdir(destination)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 VERSION = "1.0.0"
 
 # Setup logging
 def setup_logging(log_file_path):
+    """
+    Sets up logging to both file and console.
+
+    Args:
+        log_file_path (str): The path to the log file.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -31,6 +51,19 @@ def setup_logging(log_file_path):
     return logger
 
 def write_versions_txt(output_dir):
+    """
+    Writes a `versions.txt` file with tool and package versions to the output directory.
+
+    Includes versions of:
+    - Plasmidhub
+    - Python
+    - FastANI
+    - ABRicate
+    - Several important Python packages
+
+    Args:
+        output_dir (str): Path to the output directory where versions.txt will be saved.
+    """
     import sys
     import importlib.metadata
     def get_tool_version(cmd):
@@ -58,6 +91,20 @@ def write_versions_txt(output_dir):
             vf.write(f"{pkg}: {get_package_version(pkg)}\n")
 
 def main():
+    """
+    Main entry point of the Plasmidhub CLI tool.
+
+    Parses command-line arguments, handles plot-only mode or full pipeline mode,
+    sets up logging and directories, and orchestrates the preprocessing, ANI computation,
+    clustering, and optional ABRicate analysis steps.
+
+    The CLI supports:
+    - ANI calculation using FastANI
+    - Clustering plasmids
+    - Annotating with ABRicate
+    - Network visualization and customization
+    - Running plot generation separately (--plot_only)
+    """
     parser = argparse.ArgumentParser(
         prog="plasmidhub",
         description=(
@@ -212,21 +259,18 @@ def main():
     # Step 5-6: run FastANI - output to results_dir 
     logger.info("Running FastANI...")
 
-    cwd = os.getcwd()
-    os.chdir(args.input_dir)  # switch to directory with FASTA files
+    input_path = Path(args.input_dir)
+    results_path = Path(results_dir)
 
-    try:
+    with change_dir(input_path):
         ani.run_fastani(
-            os.path.join(results_dir, "Plasmid_list.txt"),
+            str(results_path / "Plasmid_list.txt"),
             fragLen=args.fragLen,
             minFrag=0.001,  # Hardcoded minimum fraction
             kmer=args.kmer,
-            output_dir=results_dir,
-            threads=args.threads 
+            output_dir=str(results_path),
+            threads=args.threads
         )
-
-    finally:
-        os.chdir(cwd)  # revert back to original working directory
 
     # Step 6.5: Normalize plasmid names (strip paths)
     filtering.strip_paths_in_fastani(os.path.join(results_dir, "fastani_raw_results.tsv"))

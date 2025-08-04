@@ -8,7 +8,7 @@ setup(
     description="Plasmidhub: Bioinformatic Tool for Plasmid Network Analysis",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/YOUR_USERNAME/Plasmidhub",  # Replace with actual URL when ready
+    url="https://github.com/BALINTESBL/Plasmidhub",  # Replace with actual URL when ready
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -26,7 +26,7 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",  # Update if you use another license
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Bio-Informatics"
     ],

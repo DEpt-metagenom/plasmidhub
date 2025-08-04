@@ -1,9 +1,46 @@
+"""
+Run Abricate in bulk mode on multiple FASTA files for multiple databases.
+
+This script scans a directory for plasmid FASTA files and runs Abricate against 
+a specified list of databases. Results for each database are saved separately 
+in the provided results directory.
+
+Parameters:
+    input_dir (str): Path to the directory containing plasmid FASTA files (.fna, .fa, .fasta).
+    results_dir (str): Directory where Abricate results will be stored.
+    db_list (list): List of Abricate database names to use for screening.
+    threads (int, optional): Number of CPU threads to use for Abricate (default: 4).
+
+Behavior:
+    - Searches for all FASTA files in `input_dir`.
+    - Runs Abricate sequentially for each database in `db_list`.
+    - Saves output files named `<db>.abr` in `results_dir`.
+    - Logs progress for each database.
+    - Raises RuntimeError if no FASTA files are found.
+
+Notes:
+    - Wildcard expansion for file matching is done within the `input_dir`.
+    - Temporary output files are moved to the results directory after completion.
+"""
+
 import os
 import subprocess
 import shutil
 import glob
 import logging
 logger = logging.getLogger(__name__)
+from pathlib import Path
+from contextlib import contextmanager
+
+@contextmanager
+def change_dir(destination):
+    """Context manager to temporarily change the working directory."""
+    original_dir = os.getcwd()
+    os.chdir(destination)
+    try:
+        yield
+    finally:
+        os.chdir(original_dir)
 
 def run_abricate_bulk(input_dir, results_dir, db_list, threads=None):
     os.makedirs(results_dir, exist_ok=True)
@@ -12,35 +49,32 @@ def run_abricate_bulk(input_dir, results_dir, db_list, threads=None):
     if threads is None:
         threads = 4
 
-    # Move into input_dir because wildcard expansion happens here
-    original_dir = os.getcwd()
-    os.chdir(input_dir)
+    input_path = Path(input_dir)
+    results_path = Path(results_dir)
 
-    # Collect all fasta-like files
+    # Collect fasta-like files
     fasta_files = sorted(
-        glob.glob("*.fna") +
-        glob.glob("*.fa") +
-        glob.glob("*.fasta")
+        list(input_path.glob("*.fna")) +
+        list(input_path.glob("*.fa")) +
+        list(input_path.glob("*.fasta"))
     )
 
     if not fasta_files:
-        raise RuntimeError(f"No input files found in {input_dir} with .fna/.fa/.fasta extensions.")
+        raise RuntimeError(
+            f"No input files found in {input_dir} with .fna/.fa/.fasta extensions."
+        )
 
-    for db in db_list:
-        logger.info(f"Running abricate on database: {db}")
+    with change_dir(input_path):
+        for db in db_list:
+            logger.info(f"Running Abricate on database: {db}")
 
-        # Build the shell command with all fasta file names
-        cmd = f"abricate {' '.join(fasta_files)} --db {db} -t {threads}"
+            # Command includes all fasta files
+            cmd = f"abricate {' '.join(f.name for f in fasta_files)} --db {db} -t {threads}"
 
-        # Output file path (temporary inside input_dir)
-        temp_output = f"{db}.abr"
-        with open(temp_output, "w") as out_f:
-            subprocess.run(cmd, shell=True, stdout=out_f, stderr=subprocess.DEVNULL)
+            temp_output = f"{db}.abr"
+            with open(temp_output, "w") as out_f:
+                subprocess.run(cmd, shell=True, stdout=out_f, stderr=subprocess.DEVNULL)
 
-        # Move the output to results_dir
-        final_output_path = os.path.join(results_dir, f"{db}.abr")
-        shutil.move(temp_output, final_output_path)
-        logger.info(f"Saved: {final_output_path}")
-
-    # Return to original directory
-    os.chdir(original_dir)
+            final_output_path = results_path / f"{db}.abr"
+            shutil.move(temp_output, final_output_path)
+            logger.info(f"Saved: {final_output_path}")

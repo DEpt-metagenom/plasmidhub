@@ -6,6 +6,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 def find_valid_subclusters(results_dir):
+    """
+    Identify "valid" subclusters from the results directory.
+
+    A subcluster is considered "valid" if it contains at least 3 plasmids.
+
+    Args:
+        results_dir (str): Path to the results directory.
+
+    Returns:
+        list of tuple: List of (filename, plasmid_count) for valid subclusters,
+                       sorted by plasmid count in descending order.
+    """
     valid_subclusters = []
 
     for filename in sorted(os.listdir(results_dir)):
@@ -21,12 +33,29 @@ def find_valid_subclusters(results_dir):
     return valid_subclusters
 
 def write_subcluster_list(valid_subclusters, output_path):
+    """
+    Write a summary of valid subclusters to a file.
+
+    Args:
+        valid_subclusters (list of tuple): List of (subcluster filename, plasmid count).
+        output_path (str): Path to output file where the list will be written.
+    """
     with open(output_path, "w") as f:
         f.write("Subcluster\tPlasmids\n")
         for subcluster, count in valid_subclusters:
             f.write(f"{subcluster}\t{count}\n")
 
 def extract_clusters(valid_subclusters, results_dir, fastani_path, output_dir):
+    """
+    Extract complete subgraphs (cliques - plasmid clusters) by iteratively removing poorly connected nodes from each subcluster
+    until a complete subgraph (clique) is identified.
+
+    Args:
+        valid_subclusters (list of tuple): Valid subclusters and plasmid counts.
+        results_dir (str): Path to directory containing subcluster files.
+        fastani_path (str): Path to the final FastANI results TSV file.
+        output_dir (str): Directory where refined clusters will be saved.
+    """
     fastani_df = pd.read_csv(fastani_path, sep="\t")
 
     for subcluster_file, _ in valid_subclusters:
@@ -80,6 +109,13 @@ def extract_clusters(valid_subclusters, results_dir, fastani_path, output_dir):
 
         
 def filter_clusters_by_size(output_dir, min_cluster_size):
+    """
+    Remove clusters consisting of fewer plasmids than the specified size.
+
+    Args:
+        output_dir (str): Directory containing cluster files.
+        min_cluster_size (int): Minimum number of plasmids required to keep a cluster.
+    """
     for filename in os.listdir(output_dir):
         if filename.startswith("cluster_") and filename.endswith(".txt"):
             path = os.path.join(output_dir, filename)
@@ -89,6 +125,14 @@ def filter_clusters_by_size(output_dir, min_cluster_size):
                 os.remove(path)
 
 def write_cluster_list(output_dir, output_path):
+    """
+    Write a list of clusters and their plasmid counts to a file.
+
+    Args:
+        output_dir (str): Directory containing cluster files.
+        output_path (str): Path to output list file.
+    """
+
     cluster_files = []
     for filename in os.listdir(output_dir):
         if (
@@ -107,6 +151,20 @@ def write_cluster_list(output_dir, output_path):
             f.write(f"{filename}\t{count}\n")
                 
 def main(results_dir, min_cluster_size):
+    """
+    Main function to identify plasmid clusters.
+
+    Steps:
+    1. Find valid subclusters.
+    2. Write subcluster summary.
+    3. Extract plasmid clusters (comnplete subgraphs).
+    4. Filter clusters by size.
+    5. Write final cluster summary.
+
+    Args:
+        results_dir (str): Path to results directory containing subclusters and ANI results.
+        min_cluster_size (int): Minimum plasmid count for a cluster to be retained.
+    """
     fastani_path = os.path.join(results_dir, "ANI_results_final.tsv")
     subcluster_list_output = os.path.join(results_dir, "subcluster_list.txt")
     cluster_list_output = os.path.join(results_dir, "cluster_list.txt")
