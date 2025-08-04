@@ -1,18 +1,30 @@
 import subprocess
 from unittest.mock import patch
 import pytest
-from plasmidhub.ani import run_fastani  # example function calling fastANI
+from plasmidhub.ani import run_fastani
+from plasmidhub.abricate import run_abricate_bulk
+
 
 @patch("subprocess.run")
 def test_run_fastani_called(mock_run):
-    # Setup mock return value
     mock_run.return_value.returncode = 0
-
-    # Call the function (adapt to your actual function signature)
-    result = run_fastani(["query.fasta", "ref.fasta"])
-
-    # Check subprocess.run was called
+    result = run_fastani("plasmid_list.txt")
     mock_run.assert_called()
+    assert result is None or result == 0
 
-    # Check return or side effects if any
-    assert result is None or result == 0  # depending on your function
+
+@patch("subprocess.run")
+def test_run_abricate_bulk_called(mock_run):
+    mock_run.return_value.returncode = 0
+    
+    # Call with dummy inputs
+    result = run_abricate_bulk(
+        input_dir="test_data",
+        results_dir="results",
+        db_list=["resfinder", "ncbi"],
+        threads=2
+    )
+    
+    # Verify subprocess.run was called at least once
+    mock_run.assert_called()
+    assert result is None or result == 0
