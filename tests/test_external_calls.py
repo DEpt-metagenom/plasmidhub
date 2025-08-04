@@ -1,5 +1,7 @@
+"""Test FastANI and ABRicate"""
+
 import subprocess
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 from plasmidhub.ani import run_fastani
 from plasmidhub.abricate import run_abricate_bulk
@@ -7,6 +9,7 @@ from plasmidhub.abricate import run_abricate_bulk
 
 @patch("subprocess.run")
 def test_run_fastani_called(mock_run):
+    """Test that run_fastani calls subprocess.run and returns expected result."""
     mock_run.return_value.returncode = 0
     result = run_fastani("plasmid_list.txt")
     mock_run.assert_called()
@@ -14,17 +17,22 @@ def test_run_fastani_called(mock_run):
 
 
 @patch("subprocess.run")
-def test_run_abricate_bulk_called(mock_run):
+@patch("pathlib.Path.glob")
+def test_run_abricate_bulk_called(mock_glob, mock_run):
+    """Test that run_abricate_bulk calls subprocess.run with mocked fasta files."""
+    # Mock a fasta file with .name attribute
+    mock_file = MagicMock()
+    mock_file.name = "file1.fasta"
+    mock_glob.return_value = [mock_file]
+
     mock_run.return_value.returncode = 0
-    
-    # Call with dummy inputs
+
     result = run_abricate_bulk(
         input_dir="test_data",
         results_dir="results",
         db_list=["resfinder", "ncbi"],
-        threads=2
+        threads=2,
     )
-    
-    # Verify subprocess.run was called at least once
+
     mock_run.assert_called()
     assert result is None or result == 0
