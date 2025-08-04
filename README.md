@@ -1,4 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  [![Test Status](https://github.com/BALINTESBL/plasmidhub/actions/workflows/python-tests.yml/badge.svg)](https://github.com/BALINTESBL/plasmidhub/actions/workflows/python-tests.yml) 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) <img src="https://img.shields.io/pypi/v/plasmidhub" alt="PyPI">  [![Test Status](https://github.com/BALINTESBL/plasmidhub/actions/workflows/python-tests.yml/badge.svg)](https://github.com/BALINTESBL/plasmidhub/actions/workflows/python-tests.yml)
  
 # Plasmidhub
 Plasmidhub is a free and open-source command-line tool for comprehensive plasmid network analysis based on nucleotide sequence similarity. It enables researchers to cluster plasmids and identify genetically related groups using a dynamic, database-independent approach. Plasmidhub's approach: 
