@@ -1,32 +1,37 @@
-import subprocess
-from unittest.mock import patch
-import pytest
-from plasmidhub.ani import run_fastani
-from plasmidhub.abricate import run_abricate_bulk
+name: Run Python Tests
 
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
-@patch("subprocess.run")
-def test_run_fastani_called(mock_run):
-    mock_run.return_value.returncode = 0
-    result = run_fastani("plasmid_list.txt")
-    mock_run.assert_called()
-    assert result is None or result == 0
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-@patch("subprocess.run")
-@patch("pathlib.Path.glob")
-def test_run_abricate_bulk_called(mock_glob, mock_run):
-    # Mock FASTA files to avoid RuntimeError
-    mock_glob.return_value = [pytest.Mock(name="file1.fasta")]
-    mock_run.return_value.returncode = 0
+    - name: Cache pip
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/setup.py', '**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-    result = run_abricate_bulk(
-        input_dir="test_data",
-        results_dir="results",
-        db_list=["resfinder", "ncbi"],
-        threads=2
-    )
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
 
-    mock_run.assert_called()
-    assert result is None or result == 0
+    - name: Run tests
+      run: |
+        pytest -v --maxfail=3
 
