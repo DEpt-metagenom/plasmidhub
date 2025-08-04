@@ -33,6 +33,6 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        pytest -v --cov=plasmidhub --cov-report=xml --maxfail=3
+        pytest -v --maxfail=3
 
 
