@@ -20,11 +20,23 @@ def test_run_fastani_called(mock_run):
 @patch("pathlib.Path.glob")
 def test_run_abricate_bulk_called(mock_glob, mock_run):
     """Test that run_abricate_bulk calls subprocess.run with mocked fasta files."""
-    # Mock a fasta file with .name attribute
+
+    # Create a mock file object with a .name attribute
     mock_file = MagicMock()
     mock_file.name = "file1.fasta"
-    mock_glob.return_value = [mock_file]
 
+    # Define a side_effect function to return different results depending on glob pattern
+    def glob_side_effect(pattern):
+        if pattern == "*.fna":
+            return []
+        elif pattern == "*.fa":
+            return []
+        elif pattern == "*.fasta":
+            return [mock_file]
+        else:
+            return []
+
+    mock_glob.side_effect = glob_side_effect
     mock_run.return_value.returncode = 0
 
     result = run_abricate_bulk(
