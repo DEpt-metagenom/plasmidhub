@@ -8,7 +8,7 @@ def test_import_modules():
     import plasmidhub.clustering
 
 def test_cli_version():
-    # Run the CLI with --version to check it works
     result = subprocess.run(["plasmidhub", "--version"], capture_output=True, text=True)
     assert result.returncode == 0
-    assert "version" in result.stdout.lower()
+    assert "plasmidhub" in result.stdout.lower()
+    assert "1.0.0" in result.stdout

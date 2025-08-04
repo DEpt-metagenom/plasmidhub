@@ -9,7 +9,7 @@ def test_run_fastani_called(mock_run):
     mock_run.return_value.returncode = 0
 
     # Call the function (adapt to your actual function signature)
-    result = run_fastani(["query.fasta", "ref.fasta"], output="out.txt")
+    result = run_fastani(["query.fasta", "ref.fasta"])
 
     # Check subprocess.run was called
     mock_run.assert_called()
