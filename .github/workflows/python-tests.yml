@@ -1,35 +1,38 @@
-name: Run Python Tests
+import subprocess
+from unittest.mock import patch, MagicMock
+import pytest
+from plasmidhub.ani import run_fastani
+from plasmidhub.abricate import run_abricate_bulk
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+@patch("subprocess.run")
+def test_run_fastani_called(mock_run):
+    mock_run.return_value.returncode = 0
+    result = run_fastani("plasmid_list.txt")
+    mock_run.assert_called()
+    assert result is None or result == 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
 
-    - name: Cache pip
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/setup.py', '**/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+@patch("subprocess.run")
+@patch("pathlib.Path.glob")
+def test_run_abricate_bulk_called(mock_glob, mock_run):
+    mock_run.return_value.returncode = 0
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install .[dev]
+    # Simulate finding fasta files
+    fake_file = MagicMock()
+    fake_file.name = "dummy.fna"
+    mock_glob.return_value = [fake_file]
+
+    result = run_abricate_bulk(
+        input_dir="test_data",
+        results_dir="results",
+        db_list=["resfinder", "ncbi"],
+        threads=2
+    )
+
+    mock_run.assert_called()
+    assert result is None or result == 0
+
 
     - name: Run tests with coverage
       run: |
