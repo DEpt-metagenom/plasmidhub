@@ -1,5 +1,5 @@
 import subprocess
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 from plasmidhub.ani import run_fastani
 from plasmidhub.abricate import run_abricate_bulk
@@ -16,12 +16,9 @@ def test_run_fastani_called(mock_run):
 @patch("subprocess.run")
 @patch("pathlib.Path.glob")
 def test_run_abricate_bulk_called(mock_glob, mock_run):
+    # Mock FASTA files to avoid RuntimeError
+    mock_glob.return_value = [pytest.Mock(name="file1.fasta")]
     mock_run.return_value.returncode = 0
-
-    # Simulate finding fasta files
-    fake_file = MagicMock()
-    fake_file.name = "dummy.fna"
-    mock_glob.return_value = [fake_file]
 
     result = run_abricate_bulk(
         input_dir="test_data",
@@ -32,7 +29,6 @@ def test_run_abricate_bulk_called(mock_glob, mock_run):
 
     mock_run.assert_called()
     assert result is None or result == 0
-
 
     - name: Run tests with coverage
       run: |
