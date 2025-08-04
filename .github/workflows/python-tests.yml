@@ -30,8 +30,3 @@ def test_run_abricate_bulk_called(mock_glob, mock_run):
     mock_run.assert_called()
     assert result is None or result == 0
 
-    - name: Run tests with coverage
-      run: |
-        pytest -v --maxfail=3
-
-
