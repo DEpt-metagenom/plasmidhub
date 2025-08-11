@@ -13,8 +13,10 @@ import contextlib
 
 @contextlib.contextmanager
 def change_dir(destination: Path):
+    # Always resolve to absolute path
+    abs_destination = destination.resolve()
     prev_cwd = Path.cwd()
-    os.chdir(destination)
+    os.chdir(abs_destination)
     try:
         yield
     finally:
@@ -189,6 +191,12 @@ def main():
 
     args = parser.parse_args()
 
+    if args.plot_only and not args.input_dir:
+        args.input_dir = args.plot_only
+
+    input_path = Path(args.input_dir).resolve()
+    results_path = input_path / "results"
+    results_path.mkdir(exist_ok=True)
 
     # === Plot-only mode === #
 
@@ -258,7 +266,7 @@ def main():
     # Step 5-6: run FastANI - output to results_dir 
     logger.info("Running FastANI...")
 
-    input_path = Path(args.input_dir)
+    input_path = Path(args.input_dir).resolve()
     results_path = Path(results_dir)
 
     with change_dir(input_path):
@@ -395,6 +403,22 @@ def main():
 
 
 def move_files_to_subdirs(results_dir):
+    """
+    Organize result files by moving them into specific subdirectories within the given directory.
+
+    Creates two subdirectories inside `results_dir`: "plots" and "statistics".  
+    Moves plot files matching the patterns "network_k_*.pdf" and "network_k_*.svg" into the "plots" folder.  
+    Moves predefined statistics files (CSV and JSON) into the "statistics" folder if they exist.
+
+    Parameters:
+    -----------
+    results_dir : str
+        The path to the directory containing the result files to organize.
+
+    Returns:
+    --------
+    None
+    """
     # Create subdirectories
     plots_dir = os.path.join(results_dir, "plots")
     stats_dir = os.path.join(results_dir, "statistics")

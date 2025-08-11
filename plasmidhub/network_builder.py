@@ -146,6 +146,27 @@ def detect_communities(G):
     return partition
 
 def calculate_subcluster_distances(G, partition, results_dir):
+    """
+    Calculate mean and median edge weights (distances) between pairs of subclusters in the graph.
+
+    For each unique pair of subclusters defined by `partition`, this function finds edges connecting nodes
+    from one subcluster to the other and calculates the mean and median of their weights. Results are saved
+    as a TSV file in `results_dir`.
+
+    Parameters:
+    -----------
+    G : networkx.Graph
+        The weighted graph representing the network.
+    partition : dict
+        A dictionary mapping node IDs to subcluster IDs.
+    results_dir : str
+        Directory path where the results TSV file will be saved.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with columns ["Subcluster1", "Subcluster2", "Mean Distance", "Median Distance"].
+    """
     subcluster_combinations = list(combinations(set(partition.values()), 2))
     results = []
     
@@ -164,6 +185,23 @@ def calculate_subcluster_distances(G, partition, results_dir):
     return df_results
 
 def save_plasmids_by_subcluster(partition, results_dir):
+    """
+    Save node (plasmid) IDs grouped by their subcluster into separate text files.
+
+    Each subcluster will have its own text file in `results_dir` named "subcluster_<cluster>_plasmids.txt"
+    containing the list of node IDs (plasmids) belonging to that subcluster.
+
+    Parameters:
+    -----------
+    partition : dict
+        Dictionary mapping node IDs to subcluster IDs.
+    results_dir : str
+        Directory path where the output text files will be saved.
+
+    Returns:
+    --------
+    None
+    """
     subcluster_plasmids = {cluster: [] for cluster in set(partition.values())}
     for node, cluster in partition.items():
         subcluster_plasmids[cluster].append(node)
@@ -173,6 +211,28 @@ def save_plasmids_by_subcluster(partition, results_dir):
             f.write("\n".join(plasmids))
 
 def calculate_network_metrics(G, partition):
+    """
+    Calculate basic network metrics: connectance, modularity, and nestedness for the given graph.
+
+    Connectance is the ratio of actual edges to all possible edges.
+    Modularity is computed using the Louvain method based on the given partition.
+    Nestedness is calculated based on the adjacency matrix of the graph.
+
+    Parameters:
+    -----------
+    G : networkx.Graph
+        Weighted network graph.
+    partition : dict
+        Dictionary mapping node IDs to community/subcluster IDs.
+
+    Returns:
+    --------
+    tuple
+        (connectance, modularity, nestedness) where
+        connectance : float
+        modularity : float
+        nestedness : float or np.nan if undefined
+    """
     num_edges = G.number_of_edges()
     num_nodes = G.number_of_nodes()
     num_possible_edges = num_nodes * (num_nodes - 1) / 2
@@ -196,18 +256,70 @@ def calculate_network_metrics(G, partition):
     return connectance, modularity, nestedness
 
 def calculate_node_degrees(G, results_dir):
+    """
+    Calculate weighted node degrees and save the results to a CSV file.
+
+    The weighted degree is the sum of weights of edges connected to each node.
+
+    Parameters:
+    -----------
+    G : networkx.Graph
+        Weighted network graph.
+    results_dir : str
+        Directory path where the CSV file "node_degrees.csv" will be saved.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with columns ["Node", "Degree"] containing node degree information.
+    """
     degrees = dict(G.degree(weight='weight'))
     df_degrees = pd.DataFrame(list(degrees.items()), columns=["Node", "Degree"])
     df_degrees.to_csv(os.path.join(results_dir, "node_degrees.csv"), index=False)
     return df_degrees
 
 def calculate_betweenness_centrality(G, results_dir):
+    """
+    Calculate betweenness centrality of nodes and save to a CSV file.
+
+    Betweenness centrality measures how often a node appears on shortest paths in the network.
+
+    Parameters:
+    -----------
+    G : networkx.Graph
+        Weighted network graph.
+    results_dir : str
+        Directory path where the CSV file "betweenness_centrality.csv" will be saved.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with columns ["Node", "Betweenness Centrality"].
+    """
+
     betweenness = nx.betweenness_centrality(G, weight='weight', normalized=True)
     df_betweenness = pd.DataFrame(list(betweenness.items()), columns=["Node", "Betweenness Centrality"])
     df_betweenness.to_csv(os.path.join(results_dir, "betweenness_centrality.csv"), index=False)
     return df_betweenness
 
 def calculate_degree_centrality(G, results_dir):
+    """
+    Calculate degree centrality of nodes and save the results to a CSV file.
+
+    Degree centrality is the fraction of nodes a given node is connected to.
+
+    Parameters:
+    -----------
+    G : networkx.Graph
+        Network graph.
+    results_dir : str
+        Directory path where the CSV file "degree_centrality.csv" will be saved.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with columns ["Node", "Degree Centrality"].
+    """
     degree_centrality = nx.degree_centrality(G)
     df_degree_centrality = pd.DataFrame(list(degree_centrality.items()), columns=["Node", "Degree Centrality"])
     df_degree_centrality.to_csv(os.path.join(results_dir, "degree_centrality.csv"), index=False)

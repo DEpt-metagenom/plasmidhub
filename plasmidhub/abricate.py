@@ -33,14 +33,23 @@ from pathlib import Path
 from contextlib import contextmanager
 
 @contextmanager
-def change_dir(destination):
-    """Context manager to temporarily change the working directory."""
-    original_dir = os.getcwd()
-    os.chdir(destination)
+def change_dir(destination: Path):
+    """
+    Temporarily change to the input directory with an absolute path.
+    Restores the previous working directory afterward.
+    """
+    dest_abs = Path(destination).expanduser().resolve() 
+    if not dest_abs.exists():
+        raise FileNotFoundError(f"Directory does not exist: {dest_abs}")
+    if not dest_abs.is_dir():
+        raise NotADirectoryError(f"Not a directory: {dest_abs}")
+
+    prev_cwd = Path.cwd().resolve()
+    os.chdir(dest_abs) 
     try:
         yield
     finally:
-        os.chdir(original_dir)
+        os.chdir(prev_cwd)
 
 def run_abricate_bulk(input_dir, results_dir, db_list, threads=None):
     os.makedirs(results_dir, exist_ok=True)
