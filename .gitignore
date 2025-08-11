@@ -24,3 +24,7 @@ venv/
 
 # Mac/Unix
 .DS_Store
+
+# Test
+!tests/genomes/*.fasta
+!tests/genomes/*.txt
