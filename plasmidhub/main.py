@@ -121,7 +121,6 @@ def main():
             "Example:\n"
             "  plasmidhub path/to/my/plasmid/FASTA/files --fragLen 1000 --kmer 14 --coverage_threshold 0.5 --ani_threshold 95 --min_cluster_size 4 --plot_k 2.0 3.0 -t 32\n"
             "  plasmidhub --plot_only path/to/my/results  --plot_k 3 3 --plot_node_color white --plot_node_size 500 --plot_node_shape s -t 32\n\n"
-            "Developed by Dr. Balint Timmer, Institute of Metagenomics, University of Debrecen\n"
             "Version 1.0.0\n"
             "If you are using Plasmidhub, please reference: https://github.com/BALINTESBL/plasmidhub"
         ),
