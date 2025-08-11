@@ -123,6 +123,7 @@ Node shapes:
 
 Plots generated with Plasmidhub:
 <img width="1668" height="1668" alt="image" src="https://github.com/user-attachments/assets/afed18b8-6dbe-44b8-b539-23aa47b4bfb0" />
+Nodes represents plasmids, edges represent genetic relatedness (weighted ANI scores). Plasmids are colored by their cluster. Plasmids outside clusters have grey color by default. 
 
 ## Overview
 
