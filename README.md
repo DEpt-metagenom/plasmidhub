@@ -44,6 +44,13 @@ pip install .
 This tool requires the following external software to be installed:
 - [FastANI](https://github.com/ParBLiSS/FastANI)
 - [ABRicate](https://github.com/tseemann/abricate)
+- biopython
+- pandas
+- networkx
+- matplotlib
+- python-louvain
+- numpy
+- scipy
 
 ## Inputs
 Plasmidhub requires plasmid FASTA files (.fna or .fa or .fasta). Your FASTA files need to be placed in one directory. Ideally, there are no other files in the directory.
