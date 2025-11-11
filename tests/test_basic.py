@@ -11,4 +11,4 @@ def test_cli_version():
     result = subprocess.run(["plasmidhub", "--version"], capture_output=True, text=True)
     assert result.returncode == 0
     assert "plasmidhub" in result.stdout.lower()
-    assert "1.0.0" in result.stdout
+    assert "1.0.1" in result.stdout

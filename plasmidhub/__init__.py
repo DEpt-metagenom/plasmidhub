@@ -1,6 +1,6 @@
 # plasmidhub - Bioinformatic Tool for Plasmid Network Analysis
 #
-# Copyright (C) 2025 Balint Timmerman
+# Copyright (C) 2025 Balint Timmer
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
