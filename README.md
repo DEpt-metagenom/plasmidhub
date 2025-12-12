@@ -36,7 +36,7 @@ conda config --add channels conda-forge
 ### GitHub
 To get the latest version:
 ```
-git clone https://github.com/BALINTESBL/plasmidhub.git
+git clone https://github.com/DEpt-metagenom/plasmidhub.git
 cd plasmidhub
 pip install .
 ```
