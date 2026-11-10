@@ -9,37 +9,90 @@ Plasmidhub is a free and open-source command-line tool for comprehensive plasmid
 Network visualizations, stats and data are provided for further analysis.
 
 ## Download and Installation
-PlasmidHub can be installed via PyPI, Bioconda, or directly from GitHub.
+PlasmidHub can be installed either from PyPI, from Bioconda, or directly from the GitHub source tree. The recommended setup is a dedicated virtual environment or Conda environment, and the external command-line tools FastANI and ABRicate should be installed with Conda before installing the Python package.
 
-### Pip
+### PyPI install
+Use this when you want the Python package from PyPI.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+conda install -c conda-forge -c bioconda fastani abricate
+python -m pip install --upgrade pip
+python -m pip install plasmidhub
 ```
-pip install plasmidhub
-```
-**Note:** It's highly recommended to use a virtual environment or conda environment.
-Recommended environment setup:
-```
+
+If you prefer Conda instead of a Python venv, use:
+
+```bash
 conda create -n plasmidhub python=3.8
 conda activate plasmidhub
+conda install -c conda-forge -c bioconda fastani abricate
+python -m pip install plasmidhub
 ```
-### Bioconda
 
-If you use Conda for environment management:
+`mamba` can be used as a faster alternative to `conda` for the same setup.
+
+```bash
+mamba create -n plasmidhub python=3.8
+mamba activate plasmidhub
+mamba install -c conda-forge -c bioconda fastani abricate
+python -m pip install plasmidhub
 ```
+
+### Conda install
+Use this when you want the package managed entirely in a Conda environment.
+
+```bash
+conda config --add channels defaults
+conda config --add channels conda-forge
+conda config --add channels bioconda
+conda create -n plasmidhub python=3.8
+conda activate plasmidhub
 conda install -c bioconda plasmidhub
 ```
-Make sure you have the bioconda channel configured. If not, configure them with:
-```
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-```
-### GitHub
-To get the latest version:
-```
+
+`mamba` can be used as a faster alternative to `conda` for the same workflow.
+
+### GitHub install
+Use this when you want to install the latest source code from the repository in a virtual environment.
+
+```bash
 git clone https://github.com/DEpt-metagenom/plasmidhub.git
 cd plasmidhub
-pip install .
+python -m venv .venv
+source .venv/bin/activate
+conda install -c conda-forge -c bioconda fastani abricate
+python -m pip install --upgrade pip
+python -m pip install -e .
 ```
+
+If you prefer Conda instead of a venv:
+
+```bash
+git clone https://github.com/DEpt-metagenom/plasmidhub.git
+cd plasmidhub
+conda create -n plasmidhub-dev python=3.8
+conda activate plasmidhub-dev
+conda install -c conda-forge -c bioconda fastani abricate
+python -m pip install -e .
+```
+
+### Running the unit tests
+From the project root, run:
+
+```bash
+pytest -q
+```
+
+If you are using the project Conda environment:
+
+```bash
+eval $(conda shell.bash hook)
+conda activate plasmidhub
+pytest -q
+```
+
 ### Dependencies
 This tool requires the following external software to be installed:
 - [FastANI](https://github.com/ParBLiSS/FastANI)
