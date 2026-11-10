@@ -78,6 +78,18 @@ conda install -c conda-forge -c bioconda fastani abricate
 python -m pip install -e .
 ```
 
+### Docker install
+Use this when you want to run Plasmidhub in a containerized environment.
+
+```bash
+git clone https://github.com/DEpt-metagenom/plasmidhub.git
+cd plasmidhub
+docker build -t plasmidhub .
+docker run --rm -it plasmidhub --help
+```
+
+The container image installs the Conda environment from [environment.yml](environment.yml), including FastANI and ABRicate, then installs the Plasmidhub package itself.
+
 ### Running the unit tests
 From the project root, run:
 
