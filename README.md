@@ -90,6 +90,17 @@ docker run --rm -it plasmidhub --help
 
 The container image installs the Conda environment from [environment.yml](environment.yml), including FastANI and ABRicate, then installs the Plasmidhub package itself.
 
+### Apptainer / Singularity install
+Use this when you need to run the same container in an HPC or Apptainer environment.
+
+```bash
+git clone https://github.com/DEpt-metagenom/plasmidhub.git
+cd plasmidhub
+docker build -t plasmidhub .
+apptainer build plasmidhub.sif docker-daemon://plasmidhub:latest
+apptainer exec plasmidhub.sif plasmidhub --help
+```
+
 ### Running the unit tests
 From the project root, run:
 
